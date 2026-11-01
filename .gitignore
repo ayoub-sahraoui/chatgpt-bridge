@@ -1,0 +1,11 @@
+node_modules/
+.wxt/
+.output/
+sdk/dist/
+stats.html
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+web-ext.config.ts

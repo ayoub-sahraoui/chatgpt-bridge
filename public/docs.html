@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatGPT Bridge — API Documentation & AI Agent Hub</title>
+  <link rel="icon" type="image/png" href="/icon/32.png" />
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #111827;
+      --card-border: #1f293d;
+      --primary: #7478aa;
+      --primary-light: #989bc7;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --code-bg: #030712;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      padding-bottom: 80px;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .logo-img { width: 36px; height: 36px; border-radius: 8px; }
+    .header-title { font-size: 1.15rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+    .header-sub { font-size: 0.78rem; color: var(--text-muted); }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .status-badge.disconnected {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .container { max-width: 1040px; margin: 0 auto; padding: 32px 20px; }
+
+    /* Hero / AI Agent Callout */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(116, 120, 170, 0.18) 0%, rgba(56, 189, 248, 0.08) 100%);
+      border: 1px solid rgba(116, 120, 170, 0.35);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .hero-title { font-size: 1.35rem; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .hero-desc { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 16px; }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-subtitle { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px; }
+
+    /* Code blocks */
+    .code-container {
+      position: relative;
+      background: var(--code-bg);
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      margin: 12px 0 16px;
+      overflow: hidden;
+    }
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 14px;
+      background: #090d16;
+      border-bottom: 1px solid #1f2937;
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: var(--text-muted);
+    }
+    pre {
+      padding: 14px 16px;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.84rem;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn:hover { background: var(--primary-light); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+    }
+    .btn-outline:hover { background: #1e293b; border-color: #334155; }
+    .btn-sm { padding: 4px 10px; font-size: 0.75rem; }
+    .copy-btn {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .copy-btn:hover { background: #334155; color: #fff; }
+    .copy-btn.copied { background: #065f46; color: #34d399; border-color: #059669; }
+
+    /* Method pills */
+    .method-post {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: monospace;
+    }
+    .method-get {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: monospace;
+    }
+
+    /* Live Tester */
+    .tester-input {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      color: #fff;
+      font-size: 0.88rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 80px;
+      margin-bottom: 12px;
+    }
+    .tester-input:focus { outline: none; border-color: var(--primary); }
+    .tester-options { display: flex; gap: 16px; margin-bottom: 14px; font-size: 0.84rem; color: var(--text-muted); align-items: center; }
+    .tester-options label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .tester-output {
+      background: var(--code-bg);
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      padding: 14px;
+      font-family: monospace;
+      font-size: 0.82rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 280px;
+      overflow-y: auto;
+      color: #cbd5e1;
+    }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.85rem; }
+    th { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--card-border); color: var(--text-muted); font-weight: 600; }
+    td { padding: 10px 12px; border-bottom: 1px solid #1f2937; }
+    code { font-family: monospace; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; color: var(--primary-light); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <img src="/logo.png" alt="ChatGPT Bridge Logo" class="logo-img" />
+      <div>
+        <div class="header-title">ChatGPT Bridge API</div>
+        <div class="header-sub">Local REST & OpenAI Gateway for AI Agents · http://127.0.0.1:8787</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div id="statusBadge" class="status-badge">
+        <span class="status-dot"></span> <span id="statusText">Checking server…</span>
+      </div>
+      <a href="https://chatgpt.com" target="_blank" class="btn btn-outline btn-sm">Open ChatGPT ↗</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- 1. AI Agent Integration Box -->
+    <div class="hero-banner">
+      <div class="hero-title">
+        <span>🤖 AI Agent System Prompt & Tools</span>
+        <button class="copy-btn" onclick="copyAgentPrompt(this)">📋 Copy System Prompt for AI Agent</button>
+      </div>
+      <p class="hero-desc">
+        Paste this prompt into your AI coding assistant (Cursor, Antigravity, Cline, Windsurf, Claude Code, or LangChain) so it knows how to invoke ChatGPT locally for deep reasoning, math, research, or drafting without an OpenAI API key!
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">
+          <span>AI AGENT INSTRUCTIONS (CLICK TO COPY)</span>
+          <button class="copy-btn" onclick="copySnippet('agent-instructions', this)">Copy</button>
+        </div>
+        <pre id="agent-instructions">### Local ChatGPT Bridge Access
+You have access to a local ChatGPT REST API running at `http://127.0.0.1:8787`.
+You can delegate complex thinking, coding, drafting, or search tasks to ChatGPT by sending standard HTTP requests:
+
+1. **Ask ChatGPT (Single-Turn or Multi-Turn)**:
+   curl -s -X POST http://127.0.0.1:8787/ask \
+     -H "Content-Type: application/json" \
+     -d '{"prompt": "Your question or task here"}'
+
+   • Returns JSON: `{"taskId": "...", "text": "<markdown answer>", "elapsedMs": 1234}`
+   • By default `newChat: false` continues in the current conversation thread.
+   • To start a fresh conversation, pass `{"prompt": "...", "newChat": true}`.
+
+2. **OpenAI SDK / Client Compatibility**:
+   Point any OpenAI-compatible client (LangChain, AutoGen, CrewAI, Python `openai` library) to:
+   • Base URL: `http://127.0.0.1:8787/v1`
+   • API Key: any string (e.g. `sk-local`)
+   • Endpoint: `POST /v1/chat/completions`
+
+3. **Management Endpoints**:
+   • Reset to new chat: `POST http://127.0.0.1:8787/new-chat`
+   • Stop in-flight task: `POST http://127.0.0.1:8787/cancel`
+   • Get last reply: `GET http://127.0.0.1:8787/last-response`
+   • Health status: `GET http://127.0.0.1:8787/health`</pre>
+      </div>
+    </div>
+
+    <!-- 2. Interactive Live Tester -->
+    <div class="card">
+      <div class="card-title">
+        <span>⚡ Try It Live (Interactive Playground)</span>
+        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">Direct HTTP fetch to :8787</span>
+      </div>
+      <p class="card-subtitle">Test sending prompts to your open ChatGPT tab right now from this page.</p>
+
+      <textarea id="testPrompt" class="tester-input" rows="2" placeholder="Type a prompt to send to ChatGPT…">Explain quantum computing in two sentences</textarea>
+
+      <div class="tester-options">
+        <label>
+          <input type="checkbox" id="testNewChat" />
+          Start New Chat Thread (newChat: true)
+        </label>
+        <label>
+          <input type="checkbox" id="testStream" checked />
+          Stream response (SSE)
+        </label>
+        <button id="sendBtn" class="btn" style="margin-left:auto;" onclick="runLiveTest()">Send Request 🚀</button>
+      </div>
+
+      <div class="code-container" style="margin-bottom:0;">
+        <div class="code-header">
+          <span>RESPONSE OUTPUT <span id="testTimer"></span></span>
+          <button class="copy-btn" onclick="copySnippet('testOutput', this)">Copy Output</button>
+        </div>
+        <div id="testOutput" class="tester-output">Ready. Click 'Send Request' to test ChatGPT Bridge…</div>
+      </div>
+    </div>
+
+    <!-- 3. API Endpoints Reference -->
+    <div class="card">
+      <div class="card-title">
+        <span>📚 REST Endpoints Reference</span>
+      </div>
+
+      <!-- POST /ask -->
+      <div style="margin-bottom: 24px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span class="method-post">POST</span>
+          <strong style="font-size:1.05rem;">/ask</strong>
+          <span style="color:var(--text-muted); font-size:0.85rem;">— Main endpoint to prompt ChatGPT</span>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>prompt</code> (or <code>message</code>)</td><td>string</td><td><em>required</em></td><td>The text prompt to type into ChatGPT.</td></tr>
+            <tr><td><code>newChat</code></td><td>boolean</td><td><code>false</code></td><td>Set <code>true</code> to start a new chat before sending; <code>false</code> continues in the same thread.</td></tr>
+            <tr><td><code>stream</code></td><td>boolean</td><td><code>false</code></td><td>Set <code>true</code> to stream deltas via Server-Sent Events (SSE).</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Tabs for code copy -->
+        <div class="code-container">
+          <div class="code-header">
+            <span>cURL EXAMPLE</span>
+            <button class="copy-btn" onclick="copySnippet('curl-ask', this)">Copy cURL</button>
+          </div>
+          <pre id="curl-ask">curl -X POST http://127.0.0.1:8787/ask \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Explain quantum computing in two sentences",
+    "newChat": false
+  }'</pre>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span>PYTHON (requests)</span>
+            <button class="copy-btn" onclick="copySnippet('py-ask', this)">Copy Python</button>
+          </div>
+          <pre id="py-ask">import requests
+
+res = requests.post("http://127.0.0.1:8787/ask", json={
+    "prompt": "Explain quantum computing in two sentences",
+    "newChat": False
+})
+print(res.json()["text"])</pre>
+        </div>
+      </div>
+
+      <hr style="border-color:var(--card-border); margin: 24px 0;" />
+
+      <!-- POST /v1/chat/completions -->
+      <div style="margin-bottom: 24px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span class="method-post">POST</span>
+          <strong style="font-size:1.05rem;">/v1/chat/completions</strong>
+          <span style="color:var(--text-muted); font-size:0.85rem;">— OpenAI-compatible completions</span>
+        </div>
+
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">
+          Compatible with any OpenAI SDK or agentic framework by simply overriding <code>base_url</code>.
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span>PYTHON (openai SDK)</span>
+            <button class="copy-btn" onclick="copySnippet('py-openai', this)">Copy Python</button>
+          </div>
+          <pre id="py-openai">from openai import OpenAI
+
+client = OpenAI(base_url="http://127.0.0.1:8787/v1", api_key="not-needed")
+
+response = client.chat.completions.create(
+    model="chatgpt",
+    messages=[{"role": "user", "content": "Explain quantum computing in two sentences"}],
+    stream=False
+)
+print(response.choices[0].message.content)</pre>
+        </div>
+      </div>
+
+      <hr style="border-color:var(--card-border); margin: 24px 0;" />
+
+      <!-- Other Endpoints -->
+      <div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <strong style="font-size:1.05rem;">Utility & Diagnostics Endpoints</strong>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/health</code></td>
+              <td>Checks whether extension and server are ready.</td>
+              <td><button class="copy-btn" onclick="copyText('curl -s http://127.0.0.1:8787/health', this)">Copy</button></td>
+            </tr>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/last-response</code></td>
+              <td>Returns markdown of the latest assistant answer on the page.</td>
+              <td><button class="copy-btn" onclick="copyText('curl -s http://127.0.0.1:8787/last-response', this)">Copy</button></td>
+            </tr>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/diagnostics</code></td>
+              <td>Live DOM selectors check of the ChatGPT tab.</td>
+              <td><button class="copy-btn" onclick="copyText('curl -s http://127.0.0.1:8787/diagnostics', this)">Copy</button></td>
+            </tr>
+            <tr>
+              <td><span class="method-post">POST</span></td>
+              <td><code>/new-chat</code></td>
+              <td>Clicks 'New chat' button inside the ChatGPT tab.</td>
+              <td><button class="copy-btn" onclick="copyText('curl -X POST http://127.0.0.1:8787/new-chat', this)">Copy</button></td>
+            </tr>
+            <tr>
+              <td><span class="method-post">POST</span></td>
+              <td><code>/cancel</code></td>
+              <td>Cancels any running generation task.</td>
+              <td><button class="copy-btn" onclick="copyText('curl -X POST http://127.0.0.1:8787/cancel', this)">Copy</button></td>
+            </tr>
+            <tr>
+              <td><span class="method-post">POST</span></td>
+              <td><code>/reload-tab</code></td>
+              <td>Reloads the ChatGPT browser tab to reconnect content scripts.</td>
+              <td><button class="copy-btn" onclick="copyText('curl -X POST http://127.0.0.1:8787/reload-tab', this)">Copy</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    function copyText(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    }
+
+    function copySnippet(id, btn) {
+      const el = document.getElementById(id);
+      if (el) copyText(el.textContent.trim(), btn);
+    }
+
+    function copyAgentPrompt(btn) {
+      copySnippet('agent-instructions', btn);
+    }
+
+    // Live Health Poller
+    async function checkHealth() {
+      const badge = document.getElementById('statusBadge');
+      const text = document.getElementById('statusText');
+      try {
+        const res = await fetch('/health');
+        if (!res.ok) throw new Error('status ' + res.status);
+        const data = await res.json();
+        if (data.extensionConnected) {
+          badge.className = 'status-badge';
+          text.textContent = 'Extension Connected';
+        } else {
+          badge.className = 'status-badge disconnected';
+          text.textContent = 'Extension Disconnected';
+        }
+      } catch (err) {
+        badge.className = 'status-badge disconnected';
+        text.textContent = 'Server Offline';
+      }
+    }
+    checkHealth();
+    setInterval(checkHealth, 3000);
+
+    // Live Tester
+    async function runLiveTest() {
+      const prompt = document.getElementById('testPrompt').value.trim();
+      const newChat = document.getElementById('testNewChat').checked;
+      const stream = document.getElementById('testStream').checked;
+      const out = document.getElementById('testOutput');
+      const btn = document.getElementById('sendBtn');
+      const timer = document.getElementById('testTimer');
+
+      if (!prompt) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Generating…';
+      out.textContent = 'Connecting to ChatGPT…';
+      const t0 = Date.now();
+      const interval = setInterval(() => {
+        timer.textContent = `(${((Date.now() - t0) / 1000).toFixed(1)}s)`;
+      }, 100);
+
+      try {
+        if (stream) {
+          const res = await fetch('/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, newChat, stream: true })
+          });
+          if (!res.ok) {
+            const err = await res.text();
+            out.textContent = `Error ${res.status}: ${err}`;
+            return;
+          }
+          out.textContent = '';
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let full = '';
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  if (data.delta) full += data.delta;
+                  else if (data.text) full = data.text;
+                  out.textContent = full;
+                  out.scrollTop = out.scrollHeight;
+                } catch {}
+              }
+            }
+          }
+        } else {
+          const res = await fetch('/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, newChat, stream: false })
+          });
+          const data = await res.json();
+          out.textContent = JSON.stringify(data, null, 2);
+        }
+      } catch (err) {
+        out.textContent = 'Request failed: ' + String(err);
+      } finally {
+        clearInterval(interval);
+        btn.disabled = false;
+        btn.textContent = 'Send Request 🚀';
+      }
+    }
+  </script>
+</body>
+</html>

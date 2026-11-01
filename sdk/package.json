@@ -1,0 +1,28 @@
+{
+  "name": "@chatgpt-bridge/local-sdk",
+  "version": "0.1.0",
+  "description": "SDK for local apps to drive the ChatGPT web UI through the ChatGPT Bridge extension.",
+  "type": "module",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/ws": "^8.18.2",
+    "typescript": "~5.9.3"
+  }
+}
