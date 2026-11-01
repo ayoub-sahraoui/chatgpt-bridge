@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,7 @@ import { applyThemeValue } from '@/lib/theme';
 import { cn } from '@/lib/utils';
 import {
   Activity,
+  ArrowLeft,
   Check,
   Code,
   Copy,
@@ -29,9 +30,10 @@ import {
   Sun,
   Terminal,
   Timer,
+  X,
 } from 'lucide-react';
 
-export default function App() {
+export default function App({ embedded = false, active = true, onBack, onClose }: { embedded?: boolean; active?: boolean; onBack?: () => void; onClose?: () => void }) {
   const [form, setForm] = useState<Settings>({ ...DEFAULT_SETTINGS });
   const [loaded, setLoaded] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
@@ -41,6 +43,7 @@ export default function App() {
   const [diagnostics, setDiagnostics] = useState<string | null>(null);
   const [diagLoading, setDiagLoading] = useState(false);
   const [copiedType, setCopiedType] = useState<string | null>(null);
+  const backButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     void getSettings().then((s) => {
@@ -56,6 +59,10 @@ export default function App() {
     });
     return () => un();
   }, []);
+
+  useEffect(() => {
+    if (embedded && active) backButtonRef.current?.focus();
+  }, [active, embedded]);
 
   function patch(p: Partial<Settings>) {
     setForm((f) => ({ ...f, ...p }));
@@ -133,17 +140,29 @@ for chunk in response:
     print(chunk.choices[0].delta.content or "", end="", flush=True)`;
 
   return (
-    <div className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/20">
+    <div className={cn('bg-background text-foreground antialiased selection:bg-primary/20', !embedded && 'min-h-screen')}>
       <header className="sticky top-0 z-10 border-b bg-background">
-        <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <img src="/logo.png" alt="" width={48} height={48} className="size-12 shrink-0 object-contain" />
-            <div className="min-w-0">
-              <h1 className="truncate text-sm font-semibold tracking-tight">ChatGPT Bridge</h1>
-              <p className="mt-0.5 text-xs text-muted-foreground">Your local ChatGPT connection</p>
+        <div className={cn('mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6', embedded && 'gap-3 p-3 sm:px-3')}>
+          {embedded ? (
+            <div className="flex w-full items-center gap-3">
+              <Button ref={backButtonRef} variant="ghost" size="icon" onClick={onBack} className="size-8 text-muted-foreground" aria-label="Back to overview" title="Back to overview">
+                <ArrowLeft className="size-4" />
+              </Button>
+              <h1 className="flex-1 text-center text-sm font-semibold">Settings</h1>
+              <Button variant="ghost" size="icon" onClick={onClose} className="size-8 text-muted-foreground" aria-label="Close panel" title="Close panel">
+                <X className="size-4" />
+              </Button>
             </div>
-          </div>
-          <div className="flex items-center gap-3">
+          ) : (
+            <div className="flex min-w-0 items-center gap-3">
+              <img src="/logo.png" alt="" width={48} height={48} className="size-12 shrink-0 object-contain" />
+              <div className="min-w-0">
+                <h1 className="truncate text-sm font-semibold tracking-tight">ChatGPT Bridge</h1>
+                <p className="mt-0.5 text-xs text-muted-foreground">Your local ChatGPT connection</p>
+              </div>
+            </div>
+          )}
+          <div className={cn('flex items-center gap-3', embedded && 'w-full justify-between')}>
             <div role="group" aria-label="Color theme" className="flex items-center gap-1 rounded-lg border bg-muted/40 p-1">
               {(
                 [
@@ -179,12 +198,14 @@ for chunk in response:
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 sm:px-6 sm:py-8">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-semibold tracking-tight">Settings</h2>
-          <p className="text-sm leading-relaxed text-muted-foreground">Manage your connection, API access, and automation preferences.</p>
-        </div>
-        <Tabs defaultValue="connection" className="gap-6">
+      <main className={cn('mx-auto max-w-4xl space-y-6 px-4 py-6 sm:px-6 sm:py-8', embedded && 'space-y-4 px-3 py-4 sm:px-3 sm:py-4')}>
+        {!embedded && (
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold tracking-tight">Settings</h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">Manage your connection, API access, and automation preferences.</p>
+          </div>
+        )}
+        <Tabs defaultValue="connection" className={embedded ? 'gap-4' : 'gap-6'}>
           <TabsList aria-label="Settings sections" className="grid h-auto w-full grid-cols-2 gap-1 p-1 sm:grid-cols-4">
             <TabsTrigger value="connection" className="min-h-9 gap-2 data-[state=active]:text-primary">
               <Server className="size-4" /> Connection

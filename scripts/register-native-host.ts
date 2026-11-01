@@ -2,6 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 
+if (process.env.CI === 'true') {
+  console.log('Skipping native host registration in CI.');
+  process.exit(0);
+}
+
 const HOST_NAME = 'com.chatgpt.bridge.server';
 const SCRIPT_PATH = path.resolve(import.meta.dirname, 'native-host.sh');
 

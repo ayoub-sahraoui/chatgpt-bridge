@@ -7,6 +7,10 @@
 <p align="center">Your ChatGPT browser session, available to local apps.</p>
 
 <p align="center">
+  <a href="https://github.com/ayoub-sahraoui/chatgpt-bridge/actions/workflows/build.yml"><img src="https://github.com/ayoub-sahraoui/chatgpt-bridge/actions/workflows/build.yml/badge.svg" alt="Build extension"></a>
+</p>
+
+<p align="center">
   <a href="#quick-start">Quick start</a> ·
   <a href="#rest-api">REST API</a> ·
   <a href="#typescript-sdk">TypeScript SDK</a> ·
@@ -190,6 +194,8 @@ The REPL supports `:new`, `:status`, and `:quit`. Switch the extension's server 
 
 ## Settings
 
+Choose **Settings** in the rounded page panel to open Connection, REST API, Automation, and Diagnostics without leaving the panel. The header includes light, dark, and system theme controls. Use the back arrow to return to the overview; unsaved field edits remain available when you reopen Settings during that panel session.
+
 | Setting | Default | Purpose |
 | --- | --- | --- |
 | WebSocket server URL | `ws://127.0.0.1:8787` | Host the extension connects to |
@@ -222,6 +228,14 @@ The REST API tab includes request examples. The Diagnostics tab inspects the man
 For local browser launch options, copy [`web-ext.config.example.ts`](./web-ext.config.example.ts) to `web-ext.config.ts`. The local file is ignored by Git so your browser profile paths stay on your machine. Production and development builds can have different extension IDs; authorize the ID of the build you actually load.
 
 To run a manual HTTP host on another port, use `PORT=8791 npm run server` and point the extension at `ws://127.0.0.1:8791`.
+
+### Automatic builds
+
+The [Build extension workflow](https://github.com/ayoub-sahraoui/chatgpt-bridge/actions/workflows/build.yml) runs on pushes, pull requests, and manual requests. It installs dependencies, checks TypeScript, and packages production and development Chrome builds.
+
+Open a successful run under **Actions → Build extension → Artifacts** to download either ZIP. Artifacts are kept for 14 days. Extract the ZIP and load its directory through **Load unpacked** in Chrome; the native-host setup in [Quick start](#quick-start) is still required.
+
+You can also select **Run workflow** on the Actions page to build a branch on demand. Native-host registration is skipped automatically in CI.
 
 ### Test without a ChatGPT session
 
