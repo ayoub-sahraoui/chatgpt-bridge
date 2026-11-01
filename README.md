@@ -11,6 +11,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/ayoub-sahraoui/chatgpt-bridge/releases/latest">Download release</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#rest-api">REST API</a> ·
   <a href="#typescript-sdk">TypeScript SDK</a> ·
@@ -236,6 +237,18 @@ The [Build extension workflow](https://github.com/ayoub-sahraoui/chatgpt-bridge/
 Open a successful run under **Actions → Build extension → Artifacts** to download either ZIP. Artifacts are kept for 14 days. Extract the ZIP and load its directory through **Load unpacked** in Chrome; the native-host setup in [Quick start](#quick-start) is still required.
 
 You can also select **Run workflow** on the Actions page to build a branch on demand. Native-host registration is skipped automatically in CI.
+
+### GitHub Releases
+
+Download versioned extension ZIPs from [GitHub Releases](https://github.com/ayoub-sahraoui/chatgpt-bridge/releases). Each release includes production and development Chrome packages with installation instructions.
+
+Pushing a version tag such as `v0.1.0` runs the build and publishes a release after it succeeds. The tag must match the version in `package.json`. For a later release, update the package version and lockfile, commit those changes, then push the matching tag:
+
+```bash
+# After updating and committing version 0.1.1:
+git tag -a v0.1.1 -m "Release v0.1.1"
+git push origin v0.1.1
+```
 
 ### Test without a ChatGPT session
 
